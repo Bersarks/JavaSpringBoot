@@ -16,6 +16,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 * Post ekleme yeni kayıt // genelde urlde gözükmez urlde karakter sınırı var postta yok her şeyi postta gönderirsek bir sınırı yoktur.
 * Put güncelleme
 * Delete Silme
+*
+* Bu bütün get post put delete aynıu url üzerinden yapılabiliyor sadece request tipi değişse yeterli.
 * */
 
 
