@@ -2,6 +2,7 @@ package com.allianz.springlesson;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 /*!!!!!!!!!Dependency değiştiği zaman kesinlikle clean ve sonrasında install yapılması gerekiyor.!!!!!!!!!!!*/
 
@@ -24,6 +25,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /*Bugün API yazma günüüüüü GetMapping ile bu olayları tekrar edip işimize gücümüze bakalım :D
 * Tiscordda bir araya gelip cayır cayır yapın :D bilmeyenlerde yönlendirmeye çalışsın*/
 @SpringBootApplication
+@EnableJpaAuditing // bazı şeyler için bunu aktif hale getirmemiz gerekiyor. Auditing Listenerı çalıştırmaya yarıyor.
 public class SpringlessonApplication {
 
 	public static void main(String[] args) {
@@ -31,3 +33,11 @@ public class SpringlessonApplication {
 	}
 
 }
+
+/* Projede biz pokemonları karakterleri ve savaş alanlarını veritabanında tutacağız.
+* Kaydedip get ile getireceğiz.
+* ekstra olarak pikaçu seni şeçtim diye string gönderince pickachunun objesini döneceğiz.
+* Stadyumlar listelenecek eklenecek ve stadyumun isminde % olan bir şeyler getirilecek.
+* oyundaki karakterler listelenecek.
+* Yazdığımız apiye Ash pikachuyu seçsin diyoruz ikisinin de verileri dönüyor.
+* */

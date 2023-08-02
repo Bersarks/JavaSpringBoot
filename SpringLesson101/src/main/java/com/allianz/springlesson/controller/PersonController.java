@@ -1,5 +1,6 @@
 package com.allianz.springlesson.controller;
 
+import com.allianz.springlesson.database.entitiy.PersonEntity;
 import com.allianz.springlesson.model.Person;
 import com.allianz.springlesson.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,11 +88,32 @@ public class PersonController {
 		return ResponseEntity.ok(personList);
 	}
 
+	@GetMapping("personList-by-name-starting-with/{key}")
+	public ResponseEntity<List<PersonEntity>> getPersonList(@PathVariable String key) { // burada urlden gelen parametreleri alıyoruz. ona göre veri gönderimi yapıyoruz.
+
+		//return new ResponseEntity<>(personList, HttpStatus.ACCEPTED);
+		//return ResponseEntity.status(HttpStatus.ACCEPTED).body("Hello World");
+		return ResponseEntity.ok(personService.getPerson(key));
+	}
+
+	@GetMapping("personList-by-name-starting-with-or-surname/name/{name}/surname/{surname}")
+	public ResponseEntity<List<PersonEntity>> getPersonList(@PathVariable String name, @PathVariable String surname) { // burada urlden gelen parametreleri alıyoruz. ona göre veri gönderimi yapıyoruz.
+
+		//return new ResponseEntity<>(personList, HttpStatus.ACCEPTED);
+		//return ResponseEntity.status(HttpStatus.ACCEPTED).body("Hello World");
+		return ResponseEntity.ok(personService.getPersonNameOrSurname(name, surname));
+	}
+
+	@GetMapping("personList-by-name-contains-with/{key}")
+	public ResponseEntity<List<PersonEntity>> getPersonListContainsKey(@PathVariable String key){
+		return ResponseEntity.ok(personService.getPersonIContains(key));
+	}
+
 	// direkt olarak objeyi alabiliyoruz bu şekilde. json formatında geliyor. Key value pairleri aynı isim olması en iyi durum.
 	// SSL sertifikası varsa o şifrelenmiş bir şekilde veriler ilerler.
 	@PostMapping("person")
-	public ResponseEntity<Person> createPerson(@RequestBody Person person) throws Exception { // body olarak aldığımızda veri paket halinde geliyor. bu yüzden requestbody kullanıyoruz.
-		Person person1 = personService.createPerson(person.getName(), person.getSurname(),
+	public ResponseEntity<PersonEntity> createPerson(@RequestBody Person person) throws Exception { // body olarak aldığımızda veri paket halinde geliyor. bu yüzden requestbody kullanıyoruz.
+		PersonEntity person1 = personService.createPerson(person.getName(), person.getSurname(),
 				person.getBirthYear(), person.getTc());
 		//throw new Exception("Hata oluştu");
 		return ResponseEntity.ok(person1);
