@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController // bunu reste controller olduğunu bildirmek için bunu koymamız gerekiyor! *****************
 @RequestMapping("person") // localhost:8080/api üzerinden request atılabilir.
@@ -41,7 +42,7 @@ public class PersonController {
 
 	//pathVariable --> url deki değişkenleri almak için kullanılır. localhost:8080/api/person/1
 
-	@GetMapping("person/{personId}")
+/*	@GetMapping("person/{personId}")
 	public ResponseEntity<List<Person>> personsAPI(@PathVariable("personId") int personId) { // içerdeki parametrenin adı yukarıda tanımlanan ile aynı olmak zorunda.
 		Person person = new Person();
 		person.setName("Mehmet");
@@ -60,7 +61,7 @@ public class PersonController {
 		personList.add(person);
 		return new ResponseEntity<>(personList, HttpStatus.ACCEPTED);
 		//return ResponseEntity.status(HttpStatus.ACCEPTED).body("Hello World");
-	}
+	}*/
 
 	@GetMapping("person-by-request-param")
 	public ResponseEntity<List<Person>> getPerson(@RequestParam int personId, @RequestParam int tc) { // burada urlden gelen parametreleri alıyoruz. ona göre veri gönderimi yapıyoruz.
@@ -105,7 +106,7 @@ public class PersonController {
 	}
 
 	@GetMapping("personList-by-name-contains-with/{key}")
-	public ResponseEntity<List<PersonEntity>> getPersonListContainsKey(@PathVariable String key){
+	public ResponseEntity<List<PersonEntity>> getPersonListContainsKey(@PathVariable String key) {
 		return ResponseEntity.ok(personService.getPersonIContains(key));
 	}
 
@@ -145,22 +146,37 @@ public class PersonController {
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
 
-	@DeleteMapping("person/{tc}")
-	public ResponseEntity<Person> deletePerson(@RequestBody Person person, @PathVariable("tc") String tc) { // body olarak aldığımızda veri paket halinde geliyor. bu yüzden requestbody kullanıyoruz.
-		List<Person> personList = new ArrayList<>();
-		Person person1 = new Person();
-		person1.setName("Gizem");
-		person1.setSurname("Kaya");
-		person1.setBirthYear(1990);
-		person1.setTc("199992323");
-		personList.add(person1);
-
-		for (Person p : personList) {
-			if (p.getTc().equals(tc)) {
-				personList.remove(p);
-				return ResponseEntity.ok(p);
-			}
+	@DeleteMapping("person/{uuid}")
+	public ResponseEntity<Boolean> deletePerson(@RequestBody Person person, @PathVariable("uuid") UUID uuid) { // body olarak aldığımızda veri paket halinde geliyor. bu yüzden requestbody kullanıyoruz.
+		boolean isDeleted = personService.deletePersonByUUID(uuid);
+		if (isDeleted) {
+			return ResponseEntity.ok(isDeleted);
 		}
-		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		return ResponseEntity.notFound().build();
+	}
+
+	@GetMapping("person-by-uuid/{uuid}")
+	public ResponseEntity<PersonEntity> getPersonByUUID(@PathVariable UUID uuid) {
+		PersonEntity personEntity = personService.getPersonByUUID(uuid);
+		if (personEntity != null) {
+			return new ResponseEntity<>(personEntity, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
+
+	}
+
+	@PutMapping("person-update/{uuid}")
+	public ResponseEntity<PersonEntity> updatePersonByUUID(@PathVariable UUID uuid,
+														   @RequestBody PersonEntity newPersonEntity) {
+
+		PersonEntity personEntity = personService.updatePersonByUUID(uuid, newPersonEntity);
+
+		if (personEntity != null) {
+			return new ResponseEntity<>(personEntity, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
+
 	}
 }
