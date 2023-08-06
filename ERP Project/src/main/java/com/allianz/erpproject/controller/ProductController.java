@@ -19,6 +19,10 @@ public class ProductController {
 	@Autowired
 	ProductService productService;
 
+	@GetMapping("/all")
+	public ResponseEntity<List<ProductEntity>> getAllProduct(){
+		return new ResponseEntity<>(productService.getAllProduct(), HttpStatus.OK);
+	}
 	@GetMapping("/search-by-name/{key}")
 	public ResponseEntity<List<ProductEntity>> getProduct(@PathVariable String key){
 		return new ResponseEntity<>(productService.getProduct(key), HttpStatus.OK);

@@ -2,12 +2,14 @@ package com.allianz.erpproject.controller;
 
 import com.allianz.erpproject.database.entity.CustomerEntity;
 import com.allianz.erpproject.database.entity.OrderEntity;
+import com.allianz.erpproject.database.entity.OrderItemEntity;
 import com.allianz.erpproject.database.entity.ProductEntity;
 import com.allianz.erpproject.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -15,6 +17,15 @@ import java.util.UUID;
 public class OrderController {
 	@Autowired
 	OrderService orderService;
+
+	@GetMapping("/get/{uuid}")
+	public ResponseEntity<List<OrderItemEntity>> getOrder(@PathVariable UUID uuid) {
+		List<OrderItemEntity> orderItemEntities= orderService.getOrderItems(uuid);
+		if (orderItemEntities.isEmpty()) {
+			return ResponseEntity.badRequest().build();
+		}
+		return ResponseEntity.ok(orderItemEntities);
+	}
 
 	@PostMapping("/add/basket/{productUuid}/{customerUuid}/{quantity}")
 	public ResponseEntity<OrderEntity> addItemToOrder(@PathVariable UUID productUuid,

@@ -6,6 +6,7 @@ import com.allianz.erpproject.database.entity.TaxRateEntity;
 import com.allianz.erpproject.database.repository.OrderItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -27,5 +28,9 @@ public class OrderItemService {
 		} else
 			orderItemEntity.setPrice(productEntity.getPrice() * quantity);
 		return orderItemEntity;
+	}
+	@Transactional
+	public void deleteOrderItems(List<OrderItemEntity> orderItemEntityList) {
+		orderItemRepository.deleteAll(orderItemEntityList);
 	}
 }

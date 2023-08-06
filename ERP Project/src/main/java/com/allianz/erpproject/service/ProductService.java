@@ -16,6 +16,9 @@ public class ProductService {
 	@Autowired
 	ProductRepository productRepository;
 
+	public List<ProductEntity> getAllProduct() {
+		return productRepository.findAll();
+	}
 	public List<ProductEntity> getProduct(String key) {
 		return productRepository.findAllByNameStartingWith(key);
 	}

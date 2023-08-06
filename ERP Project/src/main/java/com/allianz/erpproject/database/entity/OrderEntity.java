@@ -38,7 +38,4 @@ public class OrderEntity extends BaseEntity {
 	private StatusEnum status = StatusEnum.PENDING;
 	@Column
 	private double price;
-	@Column
-	private Date date;
-
 }

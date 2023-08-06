@@ -1,20 +1,15 @@
 package com.allianz.erpproject.service;
 
-import com.allianz.erpproject.controller.OrderController;
 import com.allianz.erpproject.database.entity.CustomerEntity;
 import com.allianz.erpproject.database.entity.OrderEntity;
 import com.allianz.erpproject.database.entity.OrderItemEntity;
 import com.allianz.erpproject.database.entity.ProductEntity;
 import com.allianz.erpproject.database.enums.StatusEnum;
-import com.allianz.erpproject.database.repository.CustomerRepository;
 import com.allianz.erpproject.database.repository.OrderRepository;
-import com.allianz.erpproject.util.dbutil.BaseEntity;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,6 +23,8 @@ public class OrderService {
 	ProductService productService;
 	@Autowired
 	OrderItemService orderItemService;
+	@Autowired
+	ReceiptService receiptService;
 
 
 	public OrderEntity createOrder(CustomerEntity customerEntity) {
@@ -36,6 +33,15 @@ public class OrderService {
 		orderEntity.setDescription(customerEntity.getName() + " " + customerEntity.getSurname() + " Order");
 		orderEntity.setCustomer(customerEntity);
 		return orderEntity;
+	}
+
+	public OrderEntity getActiveOrder(CustomerEntity customerEntity) {
+		for (OrderEntity orderEntity : customerEntity.getOrders()) {
+			if (orderEntity.getStatus() == StatusEnum.PENDING) {
+				return orderEntity;
+			}
+		}
+		return null;
 	}
 
 	public void setOrderPrice(OrderEntity orderEntity) {
@@ -55,7 +61,11 @@ public class OrderService {
 		return false;
 	}
 
-	//Foksiyon Parçalanacak
+	public List<OrderItemEntity> getOrderItems(UUID orderUuid) {
+		OrderEntity orderEntity = orderRepository.findByUuid(orderUuid);
+		return orderEntity.getOrderItems();
+	}
+
 	public OrderEntity addItemToOrder(UUID productUuid, UUID customerUuid, int quantity) {
 		CustomerEntity customerEntity = customerService.getCustomerByUuid(customerUuid);
 		ProductEntity productEntity = productService.getProductByUuid(productUuid);
@@ -65,11 +75,11 @@ public class OrderService {
 		if (productEntity == null) {
 			return null;
 		}
-		OrderEntity orderEntity = createOrder(customerEntity);
+		OrderEntity orderEntity = getActiveOrder(customerEntity);
 		OrderItemEntity orderItemEntity = orderItemService.createOrderItem(productEntity, quantity);
 		orderEntity.getOrderItems().add(orderItemEntity);
+		orderItemEntity.setOrder(orderEntity);
 		setOrderPrice(orderEntity);
-		customerEntity.getOrders().add(orderEntity);
 		return orderRepository.save(orderEntity);
 	}
 
@@ -96,9 +106,11 @@ public class OrderService {
 		if (orderEntity == null || status < 0 || status > 3) {
 			return null;
 		}
-		orderEntity.setStatus(StatusEnum.values()[status]);
-		return orderEntity;
+		orderEntity.setStatus(StatusEnum.values()[status - 1]);
+		receiptService.createReceipt(orderEntity);
+		return orderRepository.save(orderEntity);
 	}
+
 	@Transactional
 	public Boolean deleteOrder(UUID customerUuid, UUID orderUuid) {
 		CustomerEntity customerEntity = customerService.getCustomerByUuid(customerUuid);
@@ -111,6 +123,7 @@ public class OrderService {
 			return false;
 		}
 		customerEntity.getOrders().remove(orderEntity);
+		orderItemService.deleteOrderItems(orderEntity.getOrderItems());
 		orderRepository.deleteByUuid(orderUuid);
 		return true;
 	}
