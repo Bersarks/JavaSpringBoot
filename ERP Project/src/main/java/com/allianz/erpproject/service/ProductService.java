@@ -38,6 +38,11 @@ public class ProductService {
 		return productRepository.save(productEntity1);
 	}
 
+	public void updateProductStock(ProductEntity productEntity, int stock){
+		productEntity.setStock(productEntity.getStock() - stock);
+		productRepository.save(productEntity);
+	}
+
 	public ProductEntity getProductByUuid(UUID uuid) {
 		Optional<ProductEntity> optionalProductEntity = productRepository.findByUuid(uuid);
 		return optionalProductEntity.orElse(null);

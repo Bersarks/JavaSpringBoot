@@ -77,6 +77,7 @@ public class OrderService {
 		}
 		OrderEntity orderEntity = getActiveOrder(customerEntity);
 		OrderItemEntity orderItemEntity = orderItemService.createOrderItem(productEntity, quantity);
+		productService.updateProductStock(productEntity, quantity);
 		orderEntity.getOrderItems().add(orderItemEntity);
 		orderItemEntity.setOrder(orderEntity);
 		setOrderPrice(orderEntity);
@@ -94,6 +95,7 @@ public class OrderService {
 			return null;
 		OrderEntity orderEntity = createOrder(customerEntity);
 		OrderItemEntity orderItemEntity = orderItemService.createOrderItem(productEntity, quantity);
+		productService.updateProductStock(productEntity, quantity);
 		orderItemEntity.setOrder(orderEntity);
 		orderEntity.getOrderItems().add(orderItemEntity);
 		setOrderPrice(orderEntity);
@@ -123,6 +125,9 @@ public class OrderService {
 			return false;
 		}
 		customerEntity.getOrders().remove(orderEntity);
+		for (OrderItemEntity orderItemEntity : orderEntity.getOrderItems()) {
+			productService.updateProductStock(orderItemEntity.getProduct(), -orderItemEntity.getQuantity());
+		}
 		orderItemService.deleteOrderItems(orderEntity.getOrderItems());
 		orderRepository.deleteByUuid(orderUuid);
 		return true;
