@@ -1,21 +1,21 @@
 package com.allianz.springlesson.model;
 
-import lombok.AllArgsConstructor;
+import com.allianz.springlesson.util.BaseDTO;
 import lombok.Data;
 
-import java.util.UUID;
+import java.util.List;
 
+/*ihtiyaca göre DTO lar oluşturulur aynı entity içi n bir çok dto oluşturulabilir istediğimiz verileri de alabiliriz ekstra şeyler de eklenebilir*/
 @Data
-@AllArgsConstructor
-//@Getter // sadece Getter oluşturuyor sadece setter için yine aynı şekilde @Setter. @NoArgsConstructor ise parametresiz constructor oluşturuyor.
-public class PersonDTO {
-	private String name;
-	private String surname;
-	private int birthYear;
-	private String tc;
-	private UUID uuid;
+public class PersonDTO extends BaseDTO {
 
-	public PersonDTO() {
-		this.uuid = UUID.randomUUID();
-	}
+	private String name;
+
+	private String surname;
+
+	private int birthYear;
+
+	private String  tc;
+
+	private List<AddressDTO> address;
 }

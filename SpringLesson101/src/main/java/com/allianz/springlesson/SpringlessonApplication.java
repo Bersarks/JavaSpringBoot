@@ -19,7 +19,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 * Delete Silme
 *
 * Bu bütün get post put delete aynı url üzerinden yapılabiliyor sadece request tipi değişse yeterli.
-* */
+*
+*
+* pdf yapmak için jasper diye bir repository var.* */
 
 
 @SpringBootApplication

@@ -2,8 +2,8 @@ package com.allianz.springlesson.service;
 
 import com.allianz.springlesson.database.entitiy.PersonEntity;
 import com.allianz.springlesson.database.repository.IPersonEntityRepository;
+import com.allianz.springlesson.model.PersonDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +15,6 @@ import java.util.UUID;
 @Service
 // bu classın servis olduğunu belirtiyoruz. Program ayağa kalkarken bu serviceleri bulup hepsinden bir obje oluşturuyor.
 public class PersonService {
-	@Value("${gizem:65}")
-	int value;
-
 	@Autowired // bu anotasyon ile spring bu classı bulup bir obje oluşturuyor ve bu objeyi buraya enjekte ediyor.
 	IPersonEntityRepository personEntityRepository;
 
@@ -28,7 +25,6 @@ public class PersonService {
 		person.setBirthYear(birthYear);
 		person.setTc(tc);
 		personEntityRepository.save(person); // aynı id ile eşlecen veri varsa update ediyor yoksa yenisini ekliyor.
-		System.out.println(value);
 		return person;
 	}
 
@@ -54,9 +50,10 @@ public class PersonService {
 		return personEntity.orElse(null); // bunu koşula bakmadan yaparsak NullPointerException hatası alırız.
 	}*/
 
+
 	//Kritik işlemlerde Transactional koyarak db ile kod arasında işlemin düzgünlüğünü kontrol ediyoruz.
 	@Transactional // ya hep ya hiç hata varsa kaydeder hata yoksa o ana kadar yaptığı her şeyi geri alır.
-	public PersonEntity updatePersonByUUID(UUID uuid, PersonEntity newPersonEntity) {
+	public PersonDTO updatePersonByUUID(UUID uuid, PersonDTO newPersonEntity) {
 		PersonEntity personEntity = getPersonByUUID(uuid);
 		if (personEntity != null) {
 			personEntity.setName(newPersonEntity.getName());
